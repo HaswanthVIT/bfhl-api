@@ -38,13 +38,8 @@ function processArray(arr) {
   let concatLetters = ''; // collect letter chars in input order
 
   for (const tok of arr) {
-    // treat non-string tokens by converting to string
     const s = typeof tok === 'string' ? tok : String(tok);
-
-    // split into groups
     const groups = splitGroups(s);
-
-    // if token empty string, groups may be []
     if (groups.length === 0) continue;
 
     for (const g of groups) {
@@ -54,13 +49,11 @@ function processArray(arr) {
         if (n % 2 === 0) even_numbers.push(String(n));
         else odd_numbers.push(String(n));
       } else if (isLetters(g)) {
-        // alphabet-only token
         alphabets.push(g.toUpperCase());
-        concatLetters += g; // add letters (in order)
+        concatLetters += g;
       } else if (isSpecials(g)) {
         special_characters.push(g);
       } else {
-        // shouldn't happen, but be safe: split further character by character
         for (const ch of g) {
           if (/[A-Za-z]/.test(ch)) {
             concatLetters += ch;
@@ -77,11 +70,9 @@ function processArray(arr) {
     }
   }
 
-  // compute numeric sum
   const sumNumeric = numbers.reduce((a,b) => a + b, 0);
   const sum = String(sumNumeric);
 
-  // compute concat_string: letters only, reverse, alternating caps starting UPPER at index 0
   const reversed = concatLetters.split('').reverse().join('');
   let concat_string = '';
   for (let i=0;i<reversed.length;i++) {
@@ -103,21 +94,30 @@ function processArray(arr) {
   };
 }
 
-// Route
+// POST route
 app.post('/bfhl', (req, res) => {
   try {
     const body = req.body;
-
     if (!Array.isArray(body)) {
       return res.status(400).json({ is_success: false, error: "Request body must be a JSON array." });
     }
-
     const result = processArray(body);
     return res.status(200).json(result);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ is_success: false, error: 'Internal server error' });
   }
+});
+
+// ✅ NEW: GET route for browsers
+app.get('/bfhl', (req, res) => {
+  res.json({
+    is_success: true,
+    user_id: cfg.FULL_NAME.trim().toLowerCase().replace(/\s+/g, "_") + "_" + cfg.DOB_DDMMYYYY,
+    email: cfg.EMAIL,
+    roll_number: cfg.ROLL_NUMBER,
+    message: "This endpoint works! Use POST /bfhl with JSON body for full output."
+  });
 });
 
 // Start

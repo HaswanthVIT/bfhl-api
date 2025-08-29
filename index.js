@@ -109,16 +109,18 @@ app.post('/bfhl', (req, res) => {
   }
 });
 
-// ✅ NEW: GET route for browsers
+//  NEW: GET route for browsers
+// Add GET /bfhl for browsers (returns full JSON with sample input)
 app.get('/bfhl', (req, res) => {
-  res.json({
-    is_success: true,
-    user_id: cfg.FULL_NAME.trim().toLowerCase().replace(/\s+/g, "_") + "_" + cfg.DOB_DDMMYYYY,
-    email: cfg.EMAIL,
-    roll_number: cfg.ROLL_NUMBER,
-    message: "This endpoint works! Use POST /bfhl with JSON body for full output."
-  });
+  // Sample input array for demo
+  const sampleInput = ["1", "2", "a", "b"];
+
+  // Reuse the same processing logic
+  const result = processArray(sampleInput);
+
+  res.json(result);
 });
+
 
 // Start
 const port = cfg.PORT;
